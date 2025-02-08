@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets Data</title>
+    <style>
+        @keyframes moveCircle {
+            0% {
+                transform: translateY(-100px);
+            }
+
+            /* Bắt đầu từ trên */
+            50% {
+                transform: translateY(100px);
+            }
+
+            /* Di chuyển xuống dưới */
+            100% {
+                transform: translateY(-100px);
+            }
+
+            /* Quay lại vị trí cũ */
+        }
+
+        .circle {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            border-radius: 50%;
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="send_data()">Click</button>
+</body>
+<script>
+    function send_data() {
+        const url = "https://script.google.com/macros/s/AKfycby5-IJpaU06OD68UuqmYcNBQ_M_vPW2Y3nMgTuYCkd1W4fZwx7Fv5Vx4ZgOnZ_2T5fpjw/exec";
+
+        const data = {
+            name: "John Doe",
+            age: 30,
+            email: "john@example.com"
+        };
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.text())
+            .then(data => console.log(data))
+            .catch(error => console.error("Error:", error));
+    }
+</script>
+
+</html>

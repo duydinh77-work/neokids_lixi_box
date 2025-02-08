@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quay số ngẫu nhiên</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f3f3f3;
+            font-family: Arial, sans-serif;
+        }
+        .number-container {
+            font-size: 2rem;
+            font-weight: bold;
+            display: flex;
+            gap: 10px;
+        }
+        .digit {
+            width: 30px;
+            text-align: center;
+            /* opacity: 0; */
+            transition: opacity 0.3s linear, transform 0.3s linear;
+            position: relative;
+            overflow: hidden;
+            height: 50px;
+        }
+        .digit span {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            left: 0px;
+            top: 0px;
+            animation: spin 0.3s linear forwards;
+        }
+        @keyframes spin {
+            0% { transform: translateY(-50%); opacity: 0; }
+            50% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(50%); opacity: 0; }
+        }
+
+        @keyframes spin_final {
+            0% { transform: translateY(-50%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="number-container" id="numberContainer">
+        <span class="digit"></span>
+        <span class="digit"></span>
+        <span class="digit"></span>
+        <span class="digit"></span>
+        <span class="digit"></span>
+    </div>
+    <button onclick="startSpin()">Quay số</button>
+
+    <script>
+        function startSpin() {
+            let digits = document.querySelectorAll(".digit");
+            let finalNumber = Math.floor(10000 + Math.random() * 90000).toString();
+            console.log(finalNumber);
+            digits.forEach((digit, index) => {
+                let currentNum = Math.floor(Math.random() * 9);
+                digit.innerHTML = `<span>${currentNum}</span>`; // Bắt đầu từ 0
+                let interval = setInterval(() => {
+                    currentNum = (currentNum + 1) % 10; // Quay từ 0-9
+                    digit.innerHTML = `<span>${currentNum}</span>`;
+                    digit.querySelector("span").style.animation = `spin 0.35s linear`;
+                }, 50);
+
+                setTimeout(() => {
+                    clearInterval(interval);
+                    digit.innerHTML = `<span>${finalNumber[index]}</span>`;
+                    digit.querySelector("span").style.animation = `spin_final 0.35s ease-out forwards`;
+                }, 100 + index * 50);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="public/css/style.css">
+</head>
+
+<body>
+    <div class="main">
+        <div class="header_brand"></div>
+        <div class="number-container" onclick="startSpin()">
+            <div class="digit"><span>0</span></div>
+            <div class="digit"><span>0</span></div>
+            <div class="digit"><span>0</span></div>
+            <div class="digit"><span>0</span></div>
+            <div class="digit"><span>0</span></div>
+        </div>
+        <div class="main_content ">
+            <div class="table-container">
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã số may mắn</th>
+                            <th>Nhà phân phối</th>
+                            <th>Số điện thoại</th>
+                            <th>Địa chỉ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="footer"></div>
+        <div class="decor">
+            <img id="ma_so_mayman" src="public/images/background_maso.png" alt="Mã số may mắn">
+            <img id="rong" src="public/images/rong.png" alt="rong">
+            <img id="den_long_1" src="public/images/den_long.png" alt="den_long">
+            <img id="nhavia_thantai2" src="public/images/nhavia_thantai2.png" alt="nha_via">
+            <img id="lixi_thantai_100k" src="public/images/lixi_thantai_100k.png" alt="lixi_thantai_100k">
+            <img id="lixi_100k" src="public/images/lixi_100k.png" alt="lixi_100k">
+            <img id="page2_hoa_1" src="public/images/page2_hoa1.png" alt="Hoa">
+        </div>
+
+    </div>
+</body>
+<script>
+    document.querySelector('.table-container').addEventListener('wheel', (event) => {
+        event.preventDefault();
+        document.querySelector('.table-container').scrollBy({
+            top: event.deltaY * 0.5, // Giảm tốc độ cuộn
+            behavior: 'smooth'
+        });
+    }, { passive: false });
+    const sheetID = "1Si2ewTBp7PtKwuCMQs0g8dRql-y_vD9jU1zqKwt9i94";
+
+    const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:csv`;
+    let allRows = []; // Lưu toàn bộ dữ liệu từ Google Sheet
+    let selectedIndexes = new Set(); // Lưu các index đã lấy
+
+    function startSpin() {
+        if (allRows.length === 0) {
+            fetch(url)
+                .then(response => response.text())
+                .then(csvText => {
+                    allRows = csvText.split("\n").map(row => row.split(",")).slice(1); // Bỏ dòng tiêu đề
+                    getRandomRows(); // Lấy dữ liệu sau khi load thành công
+                })
+                .catch(error => console.error("Lỗi khi lấy dữ liệu:", error));
+        } else {
+            getRandomRows();
+        }
+    }
+
+    function getRandomRows() {
+        let tableBody = document.querySelector("#data-table tbody");
+        let availableIndexes = allRows.map((_, i) => i).filter(i => !selectedIndexes.has(i));
+
+        if (availableIndexes.length < 10) {
+            console.warn("Không còn đủ 10 record để lấy.");
+            return;
+        }
+
+        let randomIndexes = [];
+        while (randomIndexes.length < 10) {
+            let randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+            if (!selectedIndexes.has(randomIndex)) {
+                selectedIndexes.add(randomIndex);
+                randomIndexes.push(randomIndex);
+            }
+        }
+
+        randomIndexes.forEach((i, index) => {
+            let row = allRows[i];
+            showAnimated(parseInt(row[4].replaceAll('"', '')));
+            setTimeout(() => {
+                let tr = document.createElement("tr");
+                tr.innerHTML = `
+                <td>${tableBody.children.length + 1}</td>
+                <td>${row[4].replaceAll('"', '') || ""}</td>
+                <td>${row[1].replaceAll('"', '') || ""}</td>
+                <td>${row[2].replaceAll('"', '') || ""}</td>
+                <td>${row[3].replaceAll('"', '') || ""}</td>
+            `;
+                tableBody.appendChild(tr);
+
+                tr.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }, index * 300);
+        });
+    }
+
+    function showAnimated(number) {
+        let finalNumber = number.toString();
+        let digits = document.querySelectorAll(".digit");
+        digits.forEach((digit, index) => {
+            let currentNum = Math.floor(Math.random() * 9);
+            digit.innerHTML = `<span>${currentNum}</span>`;
+            let interval = setInterval(() => {
+                currentNum = (currentNum + 1) % 10; 
+                digit.innerHTML = `<span>${currentNum}</span>`;
+                digit.querySelector("span").style.animation = `spin 0.35s linear`;
+            }, 150);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                digit.innerHTML = `<span>${finalNumber[index]}</span>`;
+                digit.querySelector("span").style.animation = `spin_final 0.5s ease-out forwards`;
+            }, 1500 + index * 300);
+        });
+    }
+
+</script>
+
+</html>
