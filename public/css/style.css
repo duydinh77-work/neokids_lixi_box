@@ -341,6 +341,48 @@ tbody td {
     z-index: 55;
 }
 
+.transition {
+    position: absolute;
+    width: 50px;
+    right: 20px;
+    top: 35%;
+    z-index: 100;
+}
+
+.transition .link-group {
+    position: relative;
+}
+
+.link-group a {
+    position: absolute;
+    cursor: pointer;
+}
+.link-group img {
+    cursor: pointer;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.link-group img:hover {
+    zoom: 1.2;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+}
+
+
+.link-group #btn_100k {
+    left: 0;
+    top: 0;
+}
+
+.link-group #btn_200k {
+    left: 0;
+    top: 100px;
+}
+
+.link-group #btn_500k {
+    left: 0;
+    top: 200px;
+}
+
 .number-container {
     position: absolute;
     display: flex;
