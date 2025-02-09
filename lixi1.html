@@ -59,9 +59,7 @@
     const sheetID = "1Si2ewTBp7PtKwuCMQs0g8dRql-y_vD9jU1zqKwt9i94";
 
     const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:csv`;
-    const selectedIndexesUrl = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:csv&gid=544145012`;
     let allRows = [];
-    let allSelectedIndexs = [];
     let selectedIndexes = new Set();
 
     function startSpin() {
@@ -71,16 +69,6 @@
                 .then(csvText => {
                     allRows = csvText.split("\n").map(row => row.split(",")).slice(1);
                     getRandomRows();
-                })
-                .catch(error => console.error("Lỗi khi lấy dữ liệu:", error));
-
-            fetch(selectedIndexesUrl)
-                .then(response => response.text())
-                .then(csvText => {
-                    allSelectedIndexs = csvText.split("\n").map(row => row.split(",")).map(row => row[6].replaceAll('"', ''));
-                    allSelectedIndexs.forEach((data) => {
-                        selectedIndexes.add(parseInt(data));
-                    });
                 })
                 .catch(error => console.error("Lỗi khi lấy dữ liệu:", error));
         } else {
@@ -93,14 +81,13 @@
         let availableIndexes = allRows.map((_, i) => i).filter(i => !selectedIndexes.has(i));
 
         let randomIndexes = [];
-        while (randomIndexes.length < 10) {
+        while (randomIndexes.length < 10 && selectedIndexes.size < allRows.length ) {
             let randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
             if (!selectedIndexes.has(randomIndex)) {
                 selectedIndexes.add(randomIndex);
                 randomIndexes.push(randomIndex);
             }
         }
-        let postDataArr = [];
 
         randomIndexes.forEach((i, index) => {
             let row = allRows[i];
@@ -117,20 +104,7 @@
                 tableBody.appendChild(tr);
                 tr.scrollIntoView({ behavior: "smooth", block: "nearest" });
             }, index * 300);
-
-            let postData = {
-                stt: tableBody.children.length + 1,
-                maMayMan: row[1].replaceAll('"', ''),
-                nhaPhanPhoi: row[2].replaceAll('"', ''),
-                sdt: row[3].replaceAll('"', ''),
-                diaChi: row[4].replaceAll('"', ''),
-                giaiThuong: 100,
-                index: i
-            };
-            postDataArr.push(postData);
         });
-
-        send_data(postDataArr);
     }
 
     function showAnimated(number) {
@@ -151,21 +125,6 @@
                 digit.querySelector("span").style.animation = `spin_final 0.5s ease-out forwards`;
             }, 1500 + index * 300);
         });
-    }
-
-    function send_data(postData) {
-        const url = "https://script.google.com/macros/s/AKfycby5-IJpaU06OD68UuqmYcNBQ_M_vPW2Y3nMgTuYCkd1W4fZwx7Fv5Vx4ZgOnZ_2T5fpjw/exec";
-        console.log(JSON.stringify(postData));
-        fetch(url, {
-            method: "POST",
-            mode: "no-cors",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(postData)
-        })
-            .then(response => response.text())
-            .catch(error => console.error("Error:", error));
     }
 </script>
 
